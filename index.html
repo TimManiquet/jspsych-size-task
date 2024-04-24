@@ -132,20 +132,26 @@
 
 ////////////////////////////////////////////////////////////////////////////// PRELOADING
 
-    // make a list of all the stimuli to preload
-    if (exp_training === 0) { // if there is no training
-        // add all the main task files
-        var filenames = stimuli.map(item => item.filename);
-    } else if (exp_training === 1) { // if there is training
-        var main_filenames = stimuli.map(item => item.filename);
-        var train_filenames = training_stimuli.map(item => item.filename);
-        var filenames = main_filenames.concat(train_filenames);
+    // the list that will hold our file names to preload
+    var list_of_filenames = []
+
+    // append file names from the main task
+    for (let i = 0; i < stimuli.length; i++) {
+        list_of_filenames.push(stimuli[i].filename)
+        list_of_filenames.push(stimuli[i].mask_filename)
+    }
+    if (training) {
+        // append file names from the training
+        for (let i = 0; i < training_stimuli.length; i++) {
+            list_of_filenames.push(training_stimuli[i].filename);
+            list_of_filenames.push(training_stimuli[i].mask_filename)
+        }
     }
 
     // preload all the necessary stimuli
     var preload = {
             type: jsPsychPreload,
-            images: filenames,
+            images: list_of_filenames,
             message: "<p> Experiment loading, please wait.</p>",
             data: {
                 event: 'preload'
