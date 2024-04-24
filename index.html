@@ -76,8 +76,8 @@
 
     // EXPERIMENTAL SETTINGS
     //let button_labels = ['first_option', 'second_option'] // Important: create the labels of your buttons
-    let n_runs = 2; // number of times all the trial are shown. each run is divided in n_bocks.
-    let n_blocks = 4; // how many blocks a full run is divded in
+    let n_runs = 1; // number of times all the trial are shown. each run is divided in n_bocks.
+    let n_blocks = 8; // how many blocks a full run is divded in
     let img_width = 500; // constrain the width and height of your images
     let img_height = 500; // constrain the width and height of your images
     //let trial_duration = 1000; // trial duration (ms) *in the main task*
@@ -85,14 +85,15 @@
     let fixation_duration = 300; // pre-stimulus fixation duration (ms)
     let image_duration = 50; // target stimulus presentation duration (ms)
     let mask_duration = 500; // mask presentation duration (ms)
+    let training_threshold = 6; // successive correct trials needed to pass training
 
     // LABELS & RESPONSE KEYS
     var response_labels = ['small', 'large']; //declare the keys to use to respond
     let response_buttons = ['f', 'j']; //declare the keys to use to respond
 
     // DEBUGGING MODE
-    let debugging_mode = false; // turn this on to make the experiment much shorter
-    let debugging_length = 4; // how many trials of training and main task are played in debug mode
+    let debugging_mode = true; // turn this on to make the experiment much shorter
+    let debugging_length = 8; // how many trials of training and main task are played in debug mode
 
 ///////////////////////////////////////////////////
 
@@ -272,9 +273,9 @@
 
     // calculate block length based on debugging nb of stimuli and number of blocks
     if (debugging_mode) {
-         var block_length = Math.floor((stimuli.slice(0,debugging_length)).length/n_blocks) + 1;
-        } else {
-        var block_length = Math.floor(stimuli.length/n_blocks) + 1;
+        var block_length = Math.floor((stimuli.slice(0,debugging_length)).length/n_blocks);
+    } else {
+        var block_length = Math.floor(stimuli.length/n_blocks);
     }
 
 
@@ -442,8 +443,8 @@
                 count_correct_trial = 0; // reset to 0 if the previous trial was wrong
             }
         },
-        on_finish: function(data){ // stop after 8 consecutive correct trials
-            if (count_correct_trial > 8) {jsPsych.endCurrentTimeline()}
+        on_finish: function(data){ // stop after x consecutive correct trials
+            if (count_correct_trial > training_threshold) {jsPsych.endCurrentTimeline()}
         },
         trial_duration: 400
     };
@@ -623,7 +624,7 @@
             timeline: [fixation, jitter, image_presentation, mask, break_conditional],
             repetitions: n_runs,
             randomize_order: true,
-            timeline_variables: stimuli.slice(0,4),
+            timeline_variables: stimuli.slice(0, debugging_length),
             on_timeline_finish: function() {run_count += 1;}
         };
     } else { // otherwise use all the stimuli
@@ -664,7 +665,8 @@
             type: jsPsychPavlovia,
             command: "finish",
              participantId: function(){
-                return 'ems_' + jsPsych.data.get().values()[3].response.EMScode
+                //return 'ems_' + jsPsych.data.get().values()[3].response.EMScode
+                return 'ems_' + jsPsych.data.get().filter({event: 'demographics_survey'}).values()[0].response.EMScode
             },
             completedCallback: function() {
                 alert('Thank you for taking part! Your credit will be assigned in the next few days. You can now close this window.');
