@@ -1,0 +1,9 @@
+# ignore all the mac-related ds store files
+.DS_Store
+*/.DS_Store
+*/*/.DS_Store
+
+# ignore the python file that creates the stimulus list
+make_stim_list.py
+
+
