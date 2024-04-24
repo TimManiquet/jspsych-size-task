@@ -1,5 +1,5 @@
 # Real world size categorisation task
--------------------------------------
+------
 
 This is a jsPsych-based online categorisation task. Participants are presented with a series of images and need to classify them as _large_ or _small_ based on their real-world size. The paradigm uses **backward masking** to index the need for recurrent processing, with half of the main task trials masked.
 
